@@ -5,19 +5,21 @@ var swig = require('swig');
 
 var routes = require('./routes');
 
-swig.setDefaults({ cache: false });
+swig.setDefaults({
+    cache: false
+});
 
 
 var app = express();
 //var swigResult = swig.compileFile('views/index.html');
-app.engine('html',swig.renderFile);
+app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
 app.use(morgan('tiny'))
 
 app.use(express.static('public'));
-app.use('/special', function(req, res, next){
+app.use('/special', function (req, res, next) {
     console.log(chalk.magenta('You has reached the special area! You are a genius!'));
     next();
 })
@@ -32,6 +34,6 @@ app.use('/', routes);
 
 
 
-app.listen(3000, function(){
+app.listen(3000, function () {
     console.log("WHATEVER COREY!")
 });

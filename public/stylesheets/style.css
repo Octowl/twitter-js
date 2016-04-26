@@ -47,6 +47,7 @@ code {
     float: left;
     height: 48px;
     width: 48px;
+    border-radius: 50%;
     content: url("http://lorempixel.com/48/48");
 }
 .content {
@@ -66,7 +67,7 @@ ul {
 li {
     margin-bottom: 10px;
 }
-img {
+#profile-pic {
     height: 80%;
     width: 80%;
     margin-bottom: 20px;

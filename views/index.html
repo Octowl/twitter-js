@@ -7,7 +7,7 @@
     </div>
     <div class="row">
         <div class="col-md-3">
-            <img src="	http://factmag-images.s3.amazonaws.com/wp-content/uploads/2015/06/taylor-swift-2014-sarah-barlow-billboard-650.jpg"><br>
+            <img id="profile-pic" src="	http://factmag-images.s3.amazonaws.com/wp-content/uploads/2015/06/taylor-swift-2014-sarah-barlow-billboard-650.jpg"><br>
             <b>{{tweets[0].name}}</b><br>
             {{Math.round(tweets.length * Math.random() * 1000000)}}
             followers
@@ -19,19 +19,15 @@
                 <h2>All Tweets
                 </h2>
                 {% for tweet in tweets %}
-                    <div class="container">
-                        <div class="col-md-3">
-                            <img src="https://pbs.twimg.com/profile_images/645297505081671680/KZ5beV65.png">
-                        </div>
-                        <div class="col-md-9">
-                            <li class="tweet">
-                                <a href="/users/{{tweet.name}}">
-                                    <h3>{{tweet.name}}</h3>
-                                </a>
-                                <p>"{{tweet.text}}"</p>
-                            </li>
+                    <div class="tweetbox">
+                        <img/>
+                        <li class="content">
+                            <a class="by" href="/users/{{tweet.name}}">
+                                {{tweet.name}}
+                            </a>
+                            <p class="tweet">"{{tweet.text}}"</p>
                             <a href="#">#Retweet</a>
-                        </div>
+                        </li>
                     </div>
                 {% endfor %}
             </ul>

@@ -2,6 +2,9 @@ var chalk = require('chalk');
 var morgan = require('morgan');
 var express = require('express');
 var swig = require('swig');
+
+var routes = require('./routes');
+
 swig.setDefaults({ cache: false });
 
 
@@ -18,13 +21,15 @@ app.use('/special', function(req, res, next){
     next();
 })
 
-app.get('/', function(req, res){
-	res.render('index', {title: "TaiLer swift's Home Page", people: [{name: 'Find out more!'}, {name: "she's awesome!"}]});
-})
+app.use('/', routes);
 
-app.get('/news', function(req,res){
-    res.send("Breaking News: TAILor Swift given file, only gives back last 5 pages!");
-})
+// app.get('/', function(req, res){
+// 	res.render('index', {title: "TaiLer swift's Home Page", people: [{name: 'Find out more!'}, {name: "she's awesome!"}]});
+// })
+//
+// app.
+
+
 
 app.listen(3000, function(){
     console.log("WHATEVER COREY!")

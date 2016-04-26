@@ -16,6 +16,7 @@ app.set('views', __dirname + '/views');
 
 app.use(morgan('tiny'))
 
+app.use(express.static('public'));
 app.use('/special', function(req, res, next){
     console.log(chalk.magenta('You has reached the special area! You are a genius!'));
     next();

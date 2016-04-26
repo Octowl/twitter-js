@@ -20,7 +20,6 @@ body {
   background-color: #f5f5f5;
 }
 
-
 /* Custom page CSS
 -------------------------------------------------- */
 /* Not required for template or sticky footer method. */
@@ -56,4 +55,23 @@ code {
 }
 .content .by {
   font-weight: bold;
+}
+.tweet {
+  /*font-size: 30px;*/
+  /*font-family: ""*/
+  color: #7700FF;
+}
+
+ul {
+  list-style: none;
+}
+
+li{
+  margin-bottom: 10px;
+}
+
+img {
+  height: 80%;
+  width: 80%;
+  margin-bottom: 20px;
 }

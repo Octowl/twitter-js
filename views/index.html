@@ -3,21 +3,31 @@
 {% block content %}
 
   <div class="page-header">
-    <h1>Welcome to Twitter.js!</h1>
+    <h1>Welcome to TaiLer SW1ft's Personal Amazing Tweetastic Twitter Feed</h1>
   </div>
   <div class="row">
     <div class="col-md-3">
-      <img src="https://pbs.twimg.com/profile_images/2450268678/olxp11gnt09no2y2wpsh_normal.jpeg"><br>
-      <b>Your Name</b><br>
-      100 followers
+      <img src="	http://factmag-images.s3.amazonaws.com/wp-content/uploads/2015/06/taylor-swift-2014-sarah-barlow-billboard-650.jpg"><br>
+      <b>{{tweets[0].name}}</b><br>
+      {{Math.round(tweets.length * Math.random() * 1000000)}} followers
     </div>
     <div class="col-md-9">
 
       <!-- display tweets here -->
+      <ul>
+      <h2>All Tweets </h2>	
       {% for tweet in tweets %}
-        <li>{{tweet.text}}</li>
+      <div class ="container">
+      <div class="col-md-3">
+      	<img src="https://pbs.twimg.com/profile_images/645297505081671680/KZ5beV65.png">
+      	</div>
+      	<div class="col-md-9">
+        <li class = "tweet"><a href="/users/{{tweet.name}}"><h3>{{tweet.name}}</h3></a><p>"{{tweet.text}}"</p></li>
+        <a href="#">#Retweet</a>
+        </div>
+        </div>
       {% endfor %}
-
+      </ul>
     </div>
   </div>
 

@@ -26,26 +26,30 @@ router.get('/users/:name', function (req, res) {
     //console.log( req.params.name ); // --> 'nimit'
     res.render('index', {
         title: 'Twitter.js - Posts by ' + name,
-        tweets: list
+        tweets: list,
+        showForm: true,
+        name: name
     })
 });
 
-router.get('/tweets/:id', function(req, res){
-    var id = +req.params.id; 
+router.get('/tweets/:id', function (req, res) {
+    var id = +req.params.id;
     var twizzlers = tweetBank.find({
         id: id
     });
     res.render('index', {
-        title: 'Twitter.js - Posts by' +  twizzlers[0].name,
+        title: 'Twitter.js - Posts by' + twizzlers[0].name,
         tweets: twizzlers
     });
 });
 
 var jsonParser = bodyParser.json();
-var urlencodedParser = bodyParser.urlencoded({extended:false}); 
+var urlencodedParser = bodyParser.urlencoded({
+    extended: false
+});
 
-router.post('/tweets', urlencodedParser, function(req,res){
+router.post('/tweets', urlencodedParser, function (req, res) {
     tweetBank.add(req.body.name, req.body.text);
-    res.redirect('/');
+    res.redirect('/users/' + req.body.name);
 });
 module.exports = router;

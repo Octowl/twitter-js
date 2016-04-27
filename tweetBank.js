@@ -6,7 +6,7 @@ function add(name, text) {
     data.unshift({
         name: name,
         text: text,
-        id:id++
+        id: id++
     });
 }
 

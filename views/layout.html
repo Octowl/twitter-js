@@ -100,7 +100,10 @@
             });
             // When 'new_tweet' events are fired, do something with the packaged tweet
             socket.on('new_tweet', function(tweet) {
-                $('#all-tays').prepend('<div class="tweetbox"><img/><li class="content"><a class="by" href="/users/' + tweet.name + '">' + tweet.name + '</a><p class="tweet">"' + tweet.text + '"</p><a href="/tweets/' + tweet.id + '">Reply</a></li></div>');
+                var path = window.location.pathname;
+                if (path === '/' || path === '/users/' + tweet.name) {
+                    $('#all-tays').prepend('<div class="tweetbox"><img/><li class="content"><a class="by" href="/users/' + tweet.name + '">' + tweet.name + '</a><p class="tweet">"' + tweet.text + '"</p><a href="/tweets/' + tweet.id + '">Reply</a></li></div>');
+                }
             });
         </script>
 

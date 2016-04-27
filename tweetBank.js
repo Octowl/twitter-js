@@ -1,11 +1,12 @@
 var _ = require('lodash');
-
+var id = 0;
 var data = [];
 
 function add(name, text) {
-    data.push({
+    data.unshift({
         name: name,
-        text: text
+        text: text,
+        id:id++
     });
 }
 

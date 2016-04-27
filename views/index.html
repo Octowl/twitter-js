@@ -13,7 +13,17 @@
             followers
         </div>
         <div class="col-md-9">
+            {% if showForm %}
+                  <form action="/tweets" method="POST">
+                    <label for="name_field">Name:</label>
+                    <input name="name" type="text" id="name_field" />
 
+                    <label for="text_field">Text:</label>
+                    <input name="text" type="text" id="text_field" style="width: 350px;" />
+
+                    <input type="submit" value="Submit" />
+                  </form>
+            {% endif %}
             <!-- display tweets here -->
             <ul>
                 <h2>All Tweets
@@ -26,7 +36,7 @@
                                 {{tweet.name}}
                             </a>
                             <p class="tweet">"{{tweet.text}}"</p>
-                            <a href="#">#Retweet</a>
+                            <a href="/tweets/{{tweet.id}}">Reply</a>
                         </li>
                     </div>
                 {% endfor %}

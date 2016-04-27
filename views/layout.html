@@ -90,5 +90,19 @@
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
         <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            // Load the socket.io library above, then connect to the server. Because the socket.io server is being run on the same server as your Express instance, you can connect() without any arguments.
+            var socket = io.connect();
+            socket.on('connect', function() {
+                console.log('connected to server via WebSockets!');
+            });
+            // When 'new_tweet' events are fired, do something with the packaged tweet
+            socket.on('new_tweet', function(tweet) {
+                $('#all-tays').prepend('<div class="tweetbox"><img/><li class="content"><a class="by" href="/users/' + tweet.name + '">' + tweet.name + '</a><p class="tweet">"' + tweet.text + '"</p><a href="/tweets/' + tweet.id + '">Reply</a></li></div>');
+            });
+        </script>
+
     </body>
 </html>

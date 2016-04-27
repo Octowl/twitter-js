@@ -2,6 +2,9 @@ var chalk = require('chalk');
 var morgan = require('morgan');
 var express = require('express');
 var swig = require('swig');
+var socketio = require('socket.io');
+
+var app = express();
 
 var routes = require('./routes');
 
@@ -9,9 +12,16 @@ swig.setDefaults({
     cache: false
 });
 
+var server = app.listen(3000, function () {
+    console.log("WHATEVER COREY!")
+});
 
-var app = express();
-//var swigResult = swig.compileFile('views/index.html');
+var io = socketio.listen(server);
+var router = routes(io);
+
+
+
+
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
@@ -24,16 +34,4 @@ app.use('/special', function (req, res, next) {
     next();
 })
 
-app.use('/', routes);
-
-// app.get('/', function(req, res){
-// 	res.render('index', {title: "TaiLer swift's Home Page", people: [{name: 'Find out more!'}, {name: "she's awesome!"}]});
-// })
-//
-// app.
-
-
-
-app.listen(3000, function () {
-    console.log("WHATEVER COREY!")
-});
+app.use('/', router);

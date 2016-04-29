@@ -36,9 +36,19 @@ module.exports = function makeRouterWithSockets (io, client) {
 
   // create a new tweet
   router.post('/tweets', function(req, res, next){
-    var newTweet = tweetBank.add(req.body.name, req.body.text);
-    io.sockets.emit('new_tweet', newTweet);
-    res.redirect('/');
+      var name = req.body.name;
+      var content = req.body.text;
+      client.query('SELECT id FROM users WHERE name=$1', [name], function(err, result){
+         var userid = result.rows[0].id
+         client.query('INSERT INTO tweets (userid, content) VALUES ($1, $2)', [userid, content], function(err, data){
+             client.query('SELECT * FROM tweets INNER JOIN users ON users.id=tweets.userid WHERE users.name=$1 AND tweets.content=$2', [name, content], function(err, result){
+                 var newTweet = result.rows[0];
+                 console.log(newTweet)
+                 io.sockets.emit('new_tweet', newTweet);
+                 res.redirect('/');
+             });
+         });
+      });
   });
 
   // // replaced this hard-coded route with general static routing in app.js

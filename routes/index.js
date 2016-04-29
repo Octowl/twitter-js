@@ -1,60 +1,55 @@
+'use strict';
 var express = require('express');
-var bodyParser = require('body-parser');
-
+var router = express.Router();
 var tweetBank = require('../tweetBank');
 
-var router = express.Router();
-var jsonParser = bodyParser.json();
-var urlencodedParser = bodyParser.urlencoded({
-    extended: false
-});
+module.exports = function makeRouterWithSockets (io) {
 
-module.exports = function (io) {
-
-    router.get('/', function (req, res) {
-        var tweets = tweetBank.list();
-        res.render('index', {
-            title: "TaiLer swift's Official Personal Tweetastic Home Page",
-            tweets: tweets,
-            showForm: true
-        });
+  // a reusable function
+  function respondWithAllTweets (req, res, next){
+    var allTheTweets = tweetBank.list();
+    res.render('index', {
+      title: 'Twitter.js',
+      tweets: allTheTweets,
+      showForm: true
     });
+  }
 
-    router.get('/news', function (req, res) {
-        res.send("Breaking News: TAILor Swift given file, only gives back last 5 pages!");
-    })
+  // here we basically treet the root view and tweets view as identical
+  router.get('/', respondWithAllTweets);
+  router.get('/tweets', respondWithAllTweets);
 
-    router.get('/users/:name', function (req, res) {
-        var name = req.params.name;
-        var list = tweetBank.find({
-            name: name
-        });
-        console.log(list);
-        //console.log( req.params.name ); // --> 'nimit'
-        res.render('index', {
-            title: 'Twitter.js - Posts by ' + name,
-            tweets: list,
-            showForm: true,
-            name: name
-        })
+  // single-user page
+  router.get('/users/:username', function(req, res, next){
+    var tweetsForName = tweetBank.find({ name: req.params.username });
+    res.render('index', {
+      title: 'Twitter.js',
+      tweets: tweetsForName,
+      showForm: true,
+      username: req.params.username
     });
+  });
 
-    router.get('/tweets/:id', function (req, res) {
-        var id = +req.params.id;
-        var twizzlers = tweetBank.find({
-            id: id
-        });
-        res.render('index', {
-            title: 'Twitter.js - Posts by' + twizzlers[0].name,
-            tweets: twizzlers
-        });
+  // single-tweet page
+  router.get('/tweets/:id', function(req, res, next){
+    var tweetsWithThatId = tweetBank.find({ id: Number(req.params.id) });
+    res.render('index', {
+      title: 'Twitter.js',
+      tweets: tweetsWithThatId // an array of only one element ;-)
     });
+  });
 
-    router.post('/tweets', urlencodedParser, function (req, res) {
-        tweetBank.add(req.body.name, req.body.text);
-        io.sockets.emit('new_tweet', tweetBank.list()[0]);
-        res.redirect('/users/' + req.body.name);
-    });
+  // create a new tweet
+  router.post('/tweets', function(req, res, next){
+    var newTweet = tweetBank.add(req.body.name, req.body.text);
+    io.sockets.emit('new_tweet', newTweet);
+    res.redirect('/');
+  });
 
-    return router;
+  // // replaced this hard-coded route with general static routing in app.js
+  // router.get('/stylesheets/style.css', function(req, res, next){
+  //   res.sendFile('/stylesheets/style.css', { root: __dirname + '/../public/' });
+  // });
+
+  return router;
 }

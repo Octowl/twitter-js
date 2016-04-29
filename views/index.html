@@ -2,45 +2,42 @@
 
 {% block content %}
 
-    <div class="page-header">
-        <h1>Welcome to TaiLer SW1ft's Personal Amazing Tweetastic Twitter Feed</h1>
-    </div>
-    <div class="row">
-        <div class="col-md-3">
-            <img id="profile-pic" src="	http://factmag-images.s3.amazonaws.com/wp-content/uploads/2015/06/taylor-swift-2014-sarah-barlow-billboard-650.jpg"><br>
-            <b>{{tweets[0].name}}</b><br>
-            {{Math.round(tweets.length * Math.random() * 1000000)}}
-            followers
-        </div>
-        <div class="col-md-9">
-            {% if showForm %}
-                <form action="/tweets" method="POST">
-                    <label for="name_field">Name:</label>
-                    <input name="name" type="text" id="name_field" value="{{name}}"/>
+  <div class="page-header">
+    <h1>Welcome to Twitter.js!</h1>
+  </div>
+  <div class="row">
+    <div class="col-md-3">
+      <img src="https://pbs.twimg.com/profile_images/2450268678/olxp11gnt09no2y2wpsh_normal.jpeg"><br>
+      <b>Your Name</b><br>
+      100 followers
+      {% if showForm %}
+        <form action="/tweets" method="POST">
+          <label for="name_field">Name:</label>
+          <input name="name" type="text" id="name_field" value="{{ username }}"/>
 
-                    <label for="text_field">Text:</label>
-                    <input name="text" type="text" id="text_field" style="width: 350px;"/>
+          <label for="text_field">Text:</label>
+          <input name="text" type="text" id="text_field" />
 
-                    <input type="submit" value="Submit"/>
-                </form>
-            {% endif %}
-            <!-- display tweets here -->
-            <h2>All Tweets</h2>
-            <ul id="all-tays">
-                {% for tweet in tweets %}
-                    <div class="tweetbox">
-                        <img/>
-                        <li class="content">
-                            <a class="by" href="/users/{{tweet.name}}">
-                                {{tweet.name}}
-                            </a>
-                            <p class="tweet">"{{tweet.text}}"</p>
-                            <a href="/tweets/{{tweet.id}}">Reply</a>
-                        </li>
-                    </div>
-                {% endfor %}
-            </ul>
-        </div>
+          <input type="submit" value="Submit" />
+        </form>
+      {% endif %}
     </div>
+    <div class="col-md-9">
+
+      <!-- display tweets here -->
+      <div id="tweets">
+      {% for tweet in tweets %}
+        <div class="tweetbox">
+          <img>
+          <div class="content">
+            <p class="by"><a href="/users/{{tweet.name}}">{{tweet.name}}</a></p>
+            <p><a href="/tweets/{{tweet.id}}">{{tweet.text}}</a></p>
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+
+    </div>
+  </div>
 
 {% endblock %}

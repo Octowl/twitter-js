@@ -57,11 +57,17 @@ module.exports = function makeRouterWithSockets(io, client) {
         });
     }
 
-    function addNewUser(name) {
+    function addAndReturnNewUser(name) {
         var randomPicture = "http://lorempixel.com/120/120/";
-        client.query('INSERT INTO users (name, pictureurl) VALUES ($1,$2)', [name, randomPicture], function(err, result){
+        var user;
+        var query = client.query('INSERT INTO users (name, pictureurl) VALUES ($1,$2)', [name, randomPicture], function(err, result){
             if(err) res.status(500).send('WE BROKE IT!');
+            client.query('SELECT id FROM users WHERE name=$1', [name], function(err, result){
+                user = result.rows[0];
+            });
         });
+
+        query.on('end')
     }
 
     // create a new tweet
@@ -72,10 +78,8 @@ module.exports = function makeRouterWithSockets(io, client) {
         var query = client.query('SELECT id FROM users WHERE name=$1', [name], function (err, result) {
             var user = result.rows[0];
             if(!user) {
-                addNewUser(name);
-                client.query('SELECT id FROM users WHERE name=$1', [name], function(err, result){
-                    userid = result.rows[0].id;
-                });
+                addAndReturnNewUser(name);
+
             } else {
                 userid = user.id;
             }
@@ -84,8 +88,8 @@ module.exports = function makeRouterWithSockets(io, client) {
         query.on('end', function(){
             console.log("I'm here");
             addNewTweet(userid, content);
+            res.redirect('/');
         })
-        res.redirect('/');
     });
 
 

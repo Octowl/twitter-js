@@ -6,7 +6,7 @@ module.exports = function makeRouterWithSockets(io, client) {
 
     // a reusable function
     function respondWithAllTweets(req, res, next) {
-        client.query('SELECT tweets.id, users.name, tweets.content, users.pictureurl FROM tweets INNER JOIN users ON users.id=tweets.userid', function (err, result) {
+        client.query('SELECT tweets.id, users.name, tweets.content, users.pictureurl FROM tweets INNER JOIN users ON users.id=tweets.userid ORDER BY tweets.id DESC', function (err, result) {
             var tweets = result.rows;
             res.render('index', {
                 title: "Twitter.js",
@@ -47,22 +47,48 @@ module.exports = function makeRouterWithSockets(io, client) {
         });
     });
 
+    function addNewTweet(userid, content) {
+        client.query('INSERT INTO tweets (userid, content) VALUES ($1, $2)', [userid, content], function (err, data) {
+            client.query('SELECT * FROM tweets INNER JOIN users ON users.id=tweets.userid WHERE users.id=$1 AND tweets.content=$2', [userid, content], function (err, result) {
+                var newTweet = result.rows[0];
+                console.log(newTweet)
+                io.sockets.emit('new_tweet', newTweet);
+            });
+        });
+    }
+
+    function addNewUser(name) {
+        var randomPicture = "http://lorempixel.com/120/120/";
+        client.query('INSERT INTO users (name, pictureurl) VALUES ($1,$2)', [name, randomPicture], function(err, result){
+            if(err) res.status(500).send('WE BROKE IT!');
+        });
+    }
+
     // create a new tweet
     router.post('/tweets', function (req, res, next) {
         var name = req.body.name;
         var content = req.body.text;
-        client.query('SELECT id FROM users WHERE name=$1', [name], function (err, result) {
-            var userid = result.rows[0].id
-            client.query('INSERT INTO tweets (userid, content) VALUES ($1, $2)', [userid, content], function (err, data) {
-                client.query('SELECT * FROM tweets INNER JOIN users ON users.id=tweets.userid WHERE users.name=$1 AND tweets.content=$2', [name, content], function (err, result) {
-                    var newTweet = result.rows[0];
-                    console.log(newTweet)
-                    io.sockets.emit('new_tweet', newTweet);
-                    res.redirect('/');
+        var userid;
+        var query = client.query('SELECT id FROM users WHERE name=$1', [name], function (err, result) {
+            var user = result.rows[0];
+            if(!user) {
+                addNewUser(name);
+                client.query('SELECT id FROM users WHERE name=$1', [name], function(err, result){
+                    userid = result.rows[0].id;
                 });
-            });
+            } else {
+                userid = user.id;
+            }
         });
+
+        query.on('end', function(){
+            console.log("I'm here");
+            addNewTweet(userid, content);
+        })
+        res.redirect('/');
     });
+
+
 
     // // replaced this hard-coded route with general static routing in app.js
     // router.get('/stylesheets/style.css', function(req, res, next){

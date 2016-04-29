@@ -1,17 +1,14 @@
 'use strict';
 var express = require('express');
 var router = express.Router();
-var tweetBank = require('../tweetBank');
 
-module.exports = function makeRouterWithSockets (io) {
+module.exports = function makeRouterWithSockets (io, client) {
 
   // a reusable function
   function respondWithAllTweets (req, res, next){
-    var allTheTweets = tweetBank.list();
-    res.render('index', {
-      title: 'Twitter.js',
-      tweets: allTheTweets,
-      showForm: true
+    client.query('SELECT tweets.id, users.name, tweets.content, users.pictureurl FROM tweets INNER JOIN users ON users.id=tweets.userid', function(err, result){
+        var tweets = result.rows;
+        res.render('index', {title: "Twitter.js", tweets: tweets, showForm: true});
     });
   }
 
@@ -21,21 +18,19 @@ module.exports = function makeRouterWithSockets (io) {
 
   // single-user page
   router.get('/users/:username', function(req, res, next){
-    var tweetsForName = tweetBank.find({ name: req.params.username });
-    res.render('index', {
-      title: 'Twitter.js',
-      tweets: tweetsForName,
-      showForm: true,
-      username: req.params.username
+    var username = req.params.username;
+    client.query('SELECT * FROM tweets INNER JOIN users ON users.id=tweets.userid WHERE users.name=$1', [username], function(err, result){
+        var tweets = result.rows;
+        res.render('index', {title: "Tweets by: " + username, tweets: tweets, showForm: true, username: username });
     });
   });
 
   // single-tweet page
   router.get('/tweets/:id', function(req, res, next){
-    var tweetsWithThatId = tweetBank.find({ id: Number(req.params.id) });
-    res.render('index', {
-      title: 'Twitter.js',
-      tweets: tweetsWithThatId // an array of only one element ;-)
+    var id = +req.params.id;
+    client.query('SELECT * FROM tweets INNER JOIN users ON users.id=tweets.userid WHERE tweets.id=$1', [id], function(err, result){
+        var tweets = result.rows;
+        res.render('index', {title: "Tweet id: " + id, tweets: tweets, showForm: true});
     });
   });
 

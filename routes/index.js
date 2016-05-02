@@ -55,7 +55,7 @@ module.exports = function makeRouterWithSockets(io, client) {
 
         client.query('INSERT INTO users (name) SELECT $1 WHERE NOT EXISTS (SELECT id FROM users WHERE name=$1)', [name], function (err, result) {
             client.query('SELECT id FROM users WHERE name=$1', [name], function (err, result) {
-                console.log(result.rows);
+                userid = result.rows[0].id;
             })
         });
     });

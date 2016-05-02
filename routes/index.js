@@ -6,7 +6,7 @@ module.exports = function makeRouterWithSockets(io, client) {
 
     // a reusable function
     function respondWithAllTweets(req, res, next) {
-        client.query('SELECT tweets.id, users.name, tweets.content, users.pictureurl FROM tweets INNER JOIN users ON users.id=tweets.userid', function (err, result) {
+        client.query('SELECT tweets.id, users.name, tweets.content, users.pictureurl FROM tweets INNER JOIN users ON users.id=tweets.userid ORDER BY tweets.id DESC', function (err, result) {
             var tweets = result.rows;
             res.render('index', {
                 title: "Twitter.js",
@@ -47,6 +47,13 @@ module.exports = function makeRouterWithSockets(io, client) {
         });
     });
 
+    function addNewTweet(req, res, tweet) {
+        client.query('INSERT INTO tweets (userid, content) VALUES ($1, $2) RETURNING *', [tweet.id, tweet.content], function (err, result) {
+            io.sockets.emit('new_tweet', tweet);
+            res.redirect('/');
+        });
+    }
+
     // create a new tweet
     router.post('/tweets', function (req, res, next) {
         var name = req.body.name;
@@ -56,7 +63,13 @@ module.exports = function makeRouterWithSockets(io, client) {
         client.query('INSERT INTO users (name) SELECT $1 WHERE NOT EXISTS (SELECT id FROM users WHERE name=$1)', [name], function (err, result) {
             client.query('SELECT id FROM users WHERE name=$1', [name], function (err, result) {
                 userid = result.rows[0].id;
-            })
+                var newTweet = {
+                    id: userid,
+                    name: name,
+                    content: content
+                }
+                addNewTweet(req, res, newTweet);
+            });
         });
     });
 

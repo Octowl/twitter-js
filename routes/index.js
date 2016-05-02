@@ -51,16 +51,12 @@ module.exports = function makeRouterWithSockets(io, client) {
     router.post('/tweets', function (req, res, next) {
         var name = req.body.name;
         var content = req.body.text;
-        client.query('SELECT id FROM users WHERE name=$1', [name], function (err, result) {
-            var userid = result.rows[0].id
-            client.query('INSERT INTO tweets (userid, content) VALUES ($1, $2)', [userid, content], function (err, data) {
-                client.query('SELECT * FROM tweets INNER JOIN users ON users.id=tweets.userid WHERE users.name=$1 AND tweets.content=$2', [name, content], function (err, result) {
-                    var newTweet = result.rows[0];
-                    console.log(newTweet)
-                    io.sockets.emit('new_tweet', newTweet);
-                    res.redirect('/');
-                });
-            });
+        var userid;
+
+        client.query('INSERT INTO users (name) SELECT $1 WHERE NOT EXISTS (SELECT id FROM users WHERE name=$1)', [name], function (err, result) {
+            client.query('SELECT id FROM users WHERE name=$1', [name], function (err, result) {
+                console.log(result.rows);
+            })
         });
     });
 
